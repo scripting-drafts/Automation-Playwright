@@ -27,17 +27,7 @@ def test_tc15_place_order_register_before_checkout(page):
     checkout.place_order_and_pay()
     auth.delete_account()
 
-def test_tc17_remove_products_from_cart(page):
-    home = HomePage(page); products = ProductsPage(page); cart = CartPage(page)
-    home.goto_home()
-    home.open_products()
-    products.add_first_product_to_cart_continue()
-    home.open_cart()
-    cart.assert_loaded()
-    cart.remove_first_item()
-    cart.assert_items_count(0)
-
-def test_tc24_download_invoice_after_purchase(page):
+def test_tc16_download_invoice_after_purchase(page):
     user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
     home = HomePage(page); products = ProductsPage(page); cart = CartPage(page); checkout = CheckoutPage(page)
     auth = AuthPage(page); signup = SignupPage(page)
@@ -48,7 +38,7 @@ def test_tc24_download_invoice_after_purchase(page):
     home.open_cart()
     cart.proceed_to_checkout()
 
-    page.locator("text=Register / Login").click()
+    cart.click_login_to_checkout()
     auth.signup_start(user.name, user.email)
     signup.complete_signup(user.password)
     auth.assert_logged_in_as(user.name)
@@ -59,3 +49,15 @@ def test_tc24_download_invoice_after_purchase(page):
     checkout.download_invoice()
     checkout.continue_after_order()
     auth.delete_account()
+
+def test_tc17_remove_products_from_cart(page):
+    home = HomePage(page); products = ProductsPage(page); cart = CartPage(page)
+    home.goto_home()
+    home.open_products()
+    products.add_first_product_to_cart_continue()
+    home.open_cart()
+    cart.assert_loaded()
+    cart.remove_first_item()
+    cart.assert_items_count(0)
+
+

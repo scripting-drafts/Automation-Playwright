@@ -28,7 +28,6 @@ class BasePage:
 
     def goto_home(self):
         self.page.goto(BASE_URL, wait_until="domcontentloaded")
-        self.accept_cookies()
         expect(self.page.locator("a[href='/login']")).to_be_visible()
 
     def nav(self, link_text: str):
@@ -68,12 +67,3 @@ class BasePage:
         except Exception:
             self.kill_consent_if_present()
             locator.click(force=True, timeout=5000)
-
-
-    def accept_cookies(self):
-        try:
-            self.page.locator(
-                "button:has-text('Consent'), button:has-text('Accept')"
-            ).first.click(timeout=3000)
-        except:
-            pass

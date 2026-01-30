@@ -27,7 +27,7 @@ class CheckoutPage(BasePage):
         assert download.suggested_filename.lower().endswith((".txt", ".pdf")), download.suggested_filename
 
     def continue_after_order(self):
-        self.page.get_by_role("link", name=re.compile(r"Continue", re.I)).click()
+        self.page.locator("text=Continue").click()
 
     def assert_delivery_address_contains(self, text: str):
         expect(self.page.locator("#address_delivery")).to_contain_text(text)

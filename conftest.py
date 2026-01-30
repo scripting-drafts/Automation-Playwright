@@ -44,9 +44,21 @@ CONSENT_INIT_SCRIPT = r"""
 def browser():
   headless = os.getenv("HEADLESS", "1") == "1"
   with sync_playwright() as p:
-    b = p.chromium.launch(headless=headless)
-    yield b
-    b.close()
+    browser = p.chromium.launch(headless=headless)
+    context = browser.new_context()
+
+    page = context.new_page()
+    page.goto("https://www.automationexercise.com", wait_until="domcontentloaded")
+
+    page.locator(
+        "button:has-text('Consent'), button:has-text('Accept')"
+    ).first.click(timeout=3000)
+
+    context.storage_state(path="auth_state.json")
+    context.close()
+    yield browser
+
+    browser.close()
 
 @pytest.fixture()
 def page(browser):
@@ -54,7 +66,8 @@ def page(browser):
     accept_downloads=True,
     bypass_csp=True,
     viewport={"width": 1280, "height": 720},
-    ignore_https_errors=True
+    ignore_https_errors=True,
+    storage_state="auth_state.json"
   )
   context.add_init_script(CONSENT_INIT_SCRIPT)
 
