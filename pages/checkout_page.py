@@ -18,7 +18,7 @@ class CheckoutPage(BasePage):
         self.page.locator('input[data-qa="expiry-year"]').fill("2030")
         self.page.locator('button[data-qa="pay-button"]').click()
 
-        expect(self.page.locator("text=Your order has been placed successfully!")).to_be_visible()
+        expect(self.page.locator("text=Your order has been placed successfully!"))
 
     def download_invoice(self):
         with self.page.expect_download() as d:

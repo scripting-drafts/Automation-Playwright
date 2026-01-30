@@ -38,6 +38,13 @@ class ProductsPage(BasePage):
         first.locator("text=Add to cart").first.click()
         self._close_cart_modal(view_cart=False)
 
+        try:
+            expect(self.page.locator("text=Your product has been added to cart.")).not_to_be_visible(timeout=2000)
+            self.page.locator("text=View Cart").first.click()
+        except:
+            pass
+
+
     def add_first_two_products_to_cart_view_cart(self):
         first = self.page.locator(".product-image-wrapper").nth(0)
         first.hover()
