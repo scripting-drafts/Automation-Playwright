@@ -22,11 +22,8 @@ class AuthPage(BasePage):
         self.page.locator('button[data-qa="signup-button"]').click()
 
     def assert_login_error(self):
-        # Text varies a bit; assert within the login form area.
-        # Typical: "Your email or password is incorrect!"
-        login_form = self.page.locator(".login-form")
-        expect(login_form).to_be_visible()
-        expect(login_form).to_contain_text(re.compile(r"(email|password).*incorrect", re.I))
+        expect(self.page).to_have_url(re.compile(r"/login"), timeout=15000)
+        expect(self.page.get_by_text(re.compile(r"email or password is incorrect", re.I))).to_be_visible()
 
     def assert_signup_existing_email_error(self):
         expect(self.page.locator("text=Email Address already exist!")).to_be_visible()

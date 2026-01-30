@@ -21,7 +21,8 @@ def test_tc03_login_user_incorrect(page):
     home = HomePage(page); auth = AuthPage(page)
     home.goto_home()
     home.nav("Signup / Login")
-    auth.login("wrong@example.com", "wrongpass")
+    assert "/login" in page.url
+    auth.login("wronguser@gmail.com", "Wrongpass")
     auth.assert_login_error()
 
 def test_tc07_verify_test_cases_page(page):

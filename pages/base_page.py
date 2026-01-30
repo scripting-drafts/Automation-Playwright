@@ -28,18 +28,16 @@ class BasePage:
 
     def goto_home(self):
         self.page.goto(BASE_URL, wait_until="domcontentloaded")
+        self.accept_cookies()
         expect(self.page.locator("a[href='/login']")).to_be_visible()
 
     def nav(self, link_text: str):
         href = self.NAV_HREF.get(link_text)
         if href:
-            # Navbar links are plain anchors with stable hrefs.
-            # Use :visible to avoid picking hidden duplicates (mobile menu etc.)
-            self.safe_click(self.page.locator(f"a[href='{href}']:visible").first)
+            self.safe_click(self.page.locator(f"header a[href='{href}']").first)
             return
-
-        # Fallback: text engine (handles slashes safely), first visible match.
-        self.safe_click(self.page.locator(f"a:visible:has-text('{link_text}')").first)
+        
+        self.safe_click(self.page.locator("header a").filter(has_text=link_text).first)
 
     def scroll_bottom(self):
         self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
@@ -68,7 +66,14 @@ class BasePage:
         try:
             locator.click(timeout=5000)
         except Exception:
-            # If it races back in, nuke again and force once
             self.kill_consent_if_present()
             locator.click(force=True, timeout=5000)
 
+
+    def accept_cookies(self):
+        try:
+            self.page.locator(
+                "button:has-text('Consent'), button:has-text('Accept')"
+            ).first.click(timeout=3000)
+        except:
+            pass

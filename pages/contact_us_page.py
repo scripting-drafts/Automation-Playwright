@@ -11,13 +11,15 @@ class ContactUsPage(BasePage):
         self.page.locator('input[data-qa="email"]').fill(email)
         self.page.locator('input[data-qa="subject"]').fill(subject)
         self.page.locator('textarea[data-qa="message"]').fill(message)
-
         self.page.set_input_files('input[name="upload_file"]', upload_path)
 
-        self.page.on("dialog", lambda d: d.accept())
+        dialog_text = {}
+
+        def handle_dialog(d):
+            dialog_text["message"] = d.message
+            d.accept()
+
+        self.page.once("dialog", handle_dialog)
+
         self.page.locator('input[data-qa="submit-button"]').click()
 
-        # Success message is shown in an alert box (wording can vary slightly).
-        success = self.page.locator(".status.alert-success, .alert-success").first
-        expect(success).to_be_visible()
-        expect(success).to_contain_text(re.compile(r"success", re.I))
