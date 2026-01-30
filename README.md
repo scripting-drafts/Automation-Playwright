@@ -1,4 +1,4 @@
-# AutomationExercise - Playwright (Python) POM
+# Automation - Playwright (Python) POM
 
 ## Quickstart
 
