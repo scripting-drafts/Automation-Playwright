@@ -17,6 +17,21 @@ def test_tc01_register_user(page):
     auth.assert_logged_in_as(user.name)
     auth.delete_account()
 
+def test_tc02_login_user_correct(page):
+    home = HomePage(page); auth = AuthPage(page); signup = SignupPage(page)
+    user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
+
+    home.goto_home()
+    home.nav("Signup / Login")
+    auth.signup_start(user.name, user.email)
+    signup.complete_signup(user.password)
+    auth.assert_logged_in_as(user.name)
+
+    auth.logout()
+    auth.login(user.email, user.password)
+    auth.assert_logged_in_as(user.name)
+    auth.delete_account()
+
 def test_tc03_login_user_incorrect(page):
     home = HomePage(page); auth = AuthPage(page)
     home.goto_home()
@@ -25,12 +40,31 @@ def test_tc03_login_user_incorrect(page):
     auth.login("wronguser@gmail.com", "Wrongpass")
     auth.assert_login_error()
 
-def test_tc07_verify_test_cases_page(page):
-    home = HomePage(page)
+def test_tc04_logout_user(page):
+    home = HomePage(page); auth = AuthPage(page); signup = SignupPage(page)
+    user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
+
     home.goto_home()
-    home.open_test_cases()
-    # avoid strict text selector; assert page header
-    expect(page.get_by_role("heading", name="Test Cases").first).to_be_visible()
+    home.nav("Signup / Login")
+    auth.signup_start(user.name, user.email)
+    signup.complete_signup(user.password)
+    auth.assert_logged_in_as(user.name)
+
+    auth.logout()
+
+def test_tc05_register_user_existing_email(page):
+    home = HomePage(page); auth = AuthPage(page); signup = SignupPage(page)
+    user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
+
+    home.goto_home()
+    home.nav("Signup / Login")
+    auth.signup_start(user.name, user.email)
+    signup.complete_signup(user.password)
+    auth.assert_logged_in_as(user.name)
+
+    auth.logout()
+    auth.signup_start(user.name, user.email)
+    auth.assert_signup_existing_email_error()
 
 def test_tc06_contact_us_form(page, tmp_path):
     home = HomePage(page); contact = ContactUsPage(page)
@@ -50,3 +84,9 @@ def test_tc06_contact_us_form(page, tmp_path):
     )
     home.nav("Home")
     home.assert_loaded()
+
+def test_tc07_verify_test_cases_page(page):
+    home = HomePage(page)
+    home.goto_home()
+    home.open_test_cases()
+    expect(page.get_by_role("heading", name="Test Cases").first).to_be_visible()

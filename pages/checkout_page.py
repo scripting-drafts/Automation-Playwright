@@ -1,5 +1,5 @@
 import re
-from playwright.sync_api import expect
+from playwright.sync_api import expect, TimeoutError as PlaywrightTimeoutError
 from .base_page import BasePage
 
 class CheckoutPage(BasePage):
@@ -11,7 +11,18 @@ class CheckoutPage(BasePage):
         self.page.locator("textarea[name='message']").fill("Please deliver ASAP.")
         self.page.locator("text=Place Order").click()
 
-        self.page.locator('input[data-qa="name-on-card"]').fill("QA Engineer")
+        try:
+            self.page.locator('input[data-qa="name-on-card"]').fill("QA Engineer")
+        except PlaywrightTimeoutError:
+            if "google_vignette" in self.page.url:
+                try:
+                    self.page.go_back(wait_until="domcontentloaded")
+                except Exception:
+                    pass
+                self.page.locator("text=Place Order").click()
+                self.page.locator('input[data-qa="name-on-card"]').fill("QA Engineer")
+            else:
+                raise
         self.page.locator('input[data-qa="card-number"]').fill("4111111111111111")
         self.page.locator('input[data-qa="cvc"]').fill("123")
         self.page.locator('input[data-qa="expiry-month"]').fill("12")

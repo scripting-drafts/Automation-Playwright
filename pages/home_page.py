@@ -28,5 +28,4 @@ class HomePage(BasePage):
         self.page.locator("#scrollUp").click()
 
     def assert_banner_visible(self):
-        # Multiple copies can exist in DOM; pick first visible heading match.
         expect(self.page.get_by_role("heading", name="Full-Fledged practice website for Automation Engineers").first).to_be_visible()

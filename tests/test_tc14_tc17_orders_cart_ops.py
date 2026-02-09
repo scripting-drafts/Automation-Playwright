@@ -14,6 +14,28 @@ def _signup_flow(page, user):
     signup.complete_signup(user.password)
     auth.assert_logged_in_as(user.name)
 
+def test_tc14_place_order_register_while_checkout(page):
+    user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
+    home = HomePage(page); products = ProductsPage(page); cart = CartPage(page); checkout = CheckoutPage(page)
+    auth = AuthPage(page); signup = SignupPage(page)
+
+    home.goto_home()
+    home.open_products()
+    products.add_first_product_to_cart_continue()
+    home.open_cart()
+    cart.proceed_to_checkout()
+
+    cart.click_login_to_checkout()
+    auth.signup_start(user.name, user.email)
+    signup.complete_signup(user.password)
+    auth.assert_logged_in_as(user.name)
+
+    home.open_cart()
+    cart.proceed_to_checkout()
+    checkout.assert_address_and_review_visible()
+    checkout.place_order_and_pay()
+    auth.delete_account()
+
 def test_tc15_place_order_register_before_checkout(page):
     user = User(name=rand_name(), email=rand_email(), password="Passw0rd!")
     _signup_flow(page, user)

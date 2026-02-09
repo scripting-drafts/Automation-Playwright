@@ -1,7 +1,7 @@
 import os
 import pytest
 import re
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 BASE_URL = "https://www.automationexercise.com"
 
@@ -50,9 +50,12 @@ def browser():
     page = context.new_page()
     page.goto("https://www.automationexercise.com", wait_until="domcontentloaded")
 
-    page.locator(
+    try:
+      page.locator(
         "button:has-text('Consent'), button:has-text('Accept')"
-    ).first.click(timeout=3000)
+      ).first.click(timeout=3000)
+    except PlaywrightTimeoutError:
+      pass
 
     context.storage_state(path="auth_state.json")
     context.close()
@@ -76,7 +79,6 @@ def page(browser):
   p.set_default_navigation_timeout(30000)
 
   def _consent_guard():
-    # Extra safety for pages where overlay appears “after some navigation”
     try:
       p.evaluate("""() => {
         const nodes = document.querySelectorAll(
@@ -89,7 +91,6 @@ def page(browser):
     except Exception:
       pass
 
-  # Run guard on every load milestone
   p.on("domcontentloaded", lambda: _consent_guard())
   p.on("load", lambda: _consent_guard())
 

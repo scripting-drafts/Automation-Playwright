@@ -14,7 +14,6 @@ class ProductsPage(BasePage):
         if view_cart:
             btn = modal.get_by_role("link", name="View Cart")
         else:
-            # 'Continue Shopping' is a <button> in this modal.
             btn = modal.get_by_role("button", name="Continue Shopping")
 
         expect(btn).to_be_visible()
